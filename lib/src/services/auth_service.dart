@@ -4,6 +4,7 @@ import '../utils/cookie_utils.dart';
 
 class AuthService {
   static final String csrfUrl = 'https://www.digi-belgium.be/api/auth/csrf';
+  static final String sessionUrl = 'https://www.digi-belgium.be/api/auth/session';
   static final String loginUrl = 'https://www.digi-belgium.be/en/login';
   static final String oauthUrl = 'https://api.digi-belgium.be/v1/oauth2/send_code';
   static final String signoutUrl = 'https://www.digi-belgium.be/api/auth/signout';
@@ -19,6 +20,24 @@ class AuthService {
       print('CSRF Token: ${getCookie("__Host-authjs.csrf-token")}');
     } catch (error) {
       print('Error fetching CSRF token: $error');
+    }
+  }
+
+  static Future<void> getSession() async {
+    try {
+      // Prepare the multipart request for finalizing login
+      final uri = Uri.parse(sessionUrl);
+
+      // Send the request
+      final response = await http.get(
+        uri,
+        headers: {
+          'Cookie': getAllCookies(),
+        },
+      );
+      handleCookies(response.headersSplitValues);
+    } catch (error) {
+      print('Error getting session: $error');
     }
   }
 

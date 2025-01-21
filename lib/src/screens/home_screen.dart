@@ -22,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String url = "https://www.digi-belgium.be/en/my-digi/overview";
     scrapedData = ScrapingService.scrapeMobileUsageInKB(url);
     setState(() {});
+    AuthService.getSession();
   }
 
   // Convert KB to MB or GB
