@@ -14,7 +14,7 @@ This is an unofficial mobile app for [Digi Belgium](https://www.digi-belgium.be/
 
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_1.jpg" width="15%"></img> <img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_2.jpg" width="15%"></img> <img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_3.jpg" width="15%"></img> 
+<img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_1.jpg" width="23%"></img> <img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_2.jpg" width="23%"></img> <img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_3.jpg" width="23%"></img> 
 
 ## Disclaimer
 
