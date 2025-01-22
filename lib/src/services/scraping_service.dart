@@ -6,15 +6,14 @@ import '../utils/cookie_utils.dart';
 
 class ScrapingService {
   // This method scrapes the given URL and extracts and converts mobile usage data to KB
-  static Future<Map<String, dynamic>?> scrapeMobileUsageInKB(String url) async {
+  static Future<Map<String, dynamic>?> scrapeOverview() async {
     try {
-      // Get the session token from the cookies
-      final sessionToken = getCookie('__Secure-authjs.session-token');
-
       // Send HTTP request with the session token in the cookie header
       final response = await http.get(
-        Uri.parse(url),
-        headers: {'Cookie': '__Secure-authjs.session-token=$sessionToken'},
+        Uri.parse("https://www.digi-belgium.be/en/my-digi/overview"),
+        headers: {
+          'Cookie': getAllCookies(),
+        },
       );
 
       if (response.statusCode != 200) throw new Exception("Status code not 200");
@@ -32,8 +31,9 @@ class ScrapingService {
 
         final dataInfo = product.querySelectorAll('.card-progress-title span');
 
-        final used = (dataInfo.isNotEmpty) ? dataInfo[0].text ?? '0 MB' : '0 MB';
-        final available = (dataInfo.length > 2) ? dataInfo[2].text ?? '15 GB' : '15 GB';
+        final used = dataInfo.isNotEmpty && dataInfo[0].text.isNotEmpty ? dataInfo[0].text : '0 MB';
+        final available = dataInfo.length > 2 && dataInfo[2].text.isNotEmpty ? dataInfo[2].text : '15 GB';
+
 
         final usedKb = _convertToKB(used);
         final availableKb = _convertToKB(available);

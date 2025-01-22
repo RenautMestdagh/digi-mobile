@@ -4,13 +4,12 @@ import 'package:digi_mobile/src/utils/cookie_persistence.dart';
 import 'package:digi_mobile/src/utils/cookie_utils.dart';
 import 'src/screens/login_screen.dart';
 
-GlobalKey navigatorKey = GlobalKey();
-
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
@@ -18,7 +17,6 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return MaterialApp(
-            key: navigatorKey,
             title: 'DIGI Mobile',
             home: Scaffold(body: Center(child:CircularProgressIndicator())),  // Show loading indicator while loading cookies
           );
@@ -26,7 +24,6 @@ class MyApp extends StatelessWidget {
 
         // Once cookies are loaded, check for the session cookie and navigate accordingly
         return MaterialApp(
-          key: navigatorKey,
           title: 'DIGI Mobile',
           theme: ThemeData(
             primarySwatch: Colors.blue,

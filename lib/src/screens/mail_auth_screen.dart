@@ -2,7 +2,6 @@ import 'package:digi_mobile/src/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
-import '../services/toast_service.dart';
 
 class MailAuthScreen extends StatefulWidget {
   final int selectedVerificationMethod;
@@ -73,8 +72,7 @@ class _MailAuthScreenState extends State<MailAuthScreen> {
     try {
       bool authSuccess = await AuthService.finalizeLogin(_codeController.text);
 
-      if (!authSuccess)
-        throw Exception();
+      if (!authSuccess) throw Exception();
 
       // ToastService.showToast("oke.", isSuccess: true);
 
@@ -84,16 +82,6 @@ class _MailAuthScreenState extends State<MailAuthScreen> {
           builder: (context) => HomeScreen(),
         ),
       );
-
-      // setState(() {
-      //   _isLoading = false;
-      // });
-      //
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('Verification successful!')),
-      // );
-      //
-      // Navigator.pop(context); // Navigate back or to the next screen
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -106,125 +94,134 @@ class _MailAuthScreenState extends State<MailAuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.email_outlined,
-                  size: 80,
-                  color: const Color(0xFF007aff),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                widget.selectedVerificationMethod == 1
-                    ? 'Enter Verification Code'
-                    : 'Retrieving Verification Code',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (widget.selectedVerificationMethod == 1) ...[
-                TextField(
-                  controller: _codeController,
-                  keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  decoration: InputDecoration(
-                    labelText: 'Verification Code',
-                    errorText: _errorText,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(12),
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.email_outlined,
+                      size: 80,
+                      color: const Color(0xFF007aff),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submitCode,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isLoading ? Colors.grey : Color(0xFF007aff),
-                      // Button color
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      shadowColor: Colors.black26,
-                      elevation: 5,
-                    ),
-                    child: _isLoading
-                        ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                        : Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                  const SizedBox(height: 24),
+                  Text(
+                    widget.selectedVerificationMethod == 1 ? 'Enter Verification Code' : 'Retrieving Verification Code',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ] else ...[
-                const Text(
-                  'Please wait while the app retrieves your verification code.',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 16),
-                if (_isLoading)
-                  const Center(
-                    child: SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        color: Color(0xFF007aff),
-                      ),
-                    ),
-                  )
-                else if (_retrievedCode.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Code Retrieved:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(height: 16),
+                  if (widget.selectedVerificationMethod == 1) ...[
+                    TextField(
+                      controller: _codeController,
+                      keyboardType: TextInputType.number,
+                      maxLength: 6,
+                      decoration: InputDecoration(
+                        labelText: 'Verification Code',
+                        errorText: _errorText,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _retrievedCode,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _submitCode,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _isLoading ? Colors.grey : Color(0xFF007aff),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          shadowColor: Colors.black26,
+                          elevation: 5,
+                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-              ],
-            ],
+                    ),
+                  ] else ...[
+                    const Text(
+                      'Please wait while the app retrieves your verification code.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_isLoading)
+                      const Center(
+                        child: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: Color(0xFF007aff),
+                          ),
+                        ),
+                      )
+                    else if (_retrievedCode.isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Code Retrieved:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _retrievedCode,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ],
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            top: 60,
+            left: 25,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, color: Color(0xFF007aff), size: 28),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../../main.dart';
-
 class ToastService {
-  static final FToast fToast = FToast();
 
-  static void showToast(String message, {bool? isSuccess}) {
-    fToast.init(navigatorKey.currentState!.context);
+  static void showToast(BuildContext context, String message, {bool? isSuccess}) {
+    FToast fToast = FToast();
+    fToast.init(context);
 
     // Determine the style based on isSuccess
     Color backgroundColor;
     IconData? icon;
 
     if (isSuccess == true) {
-      backgroundColor = Colors.greenAccent;
+      backgroundColor = Color.fromRGBO(19, 179, 0, 1.0);
       icon = Icons.check;
     } else if (isSuccess == false) {
       backgroundColor = Colors.redAccent;

@@ -1,3 +1,4 @@
+import 'package:digi_mobile/src/screens/forgot_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (hasError) {
-      ToastService.showToast('Please complete all fields.');
+      ToastService.showToast(context, 'Please complete all fields.');
       return;
     }
 
@@ -74,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
       bool loginSuccess = await AuthService.login(_emailController.text, _passwordController.text);
 
       if (!loginSuccess) {
-        ToastService.showToast("Login failed", isSuccess: false);
+        ToastService.showToast(context, "Login failed", isSuccess: false);
         setState(() {
           _isLoading = false;
         });
@@ -93,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (error) {
       // Handle errors gracefully
-      ToastService.showToast("An error occurred. Please try again.", isSuccess: false);
+      ToastService.showToast(context, "An error occurred. Please try again.", isSuccess: false);
     } finally {
       // Reset loading state
       Future.delayed(Duration(milliseconds: 100), () {  // delayed because of Navigation push animation
@@ -444,22 +445,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  // SizedBox(height: 16),
-                  //
-                  // // Forgot Password
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // TODO:
-                  //   },
-                  //   child: Text(
-                  //     'Forgot Password?',
-                  //     style: TextStyle(
-                  //       color: Color(0xFF007aff),
-                  //       fontSize: 14,
-                  //       fontWeight: FontWeight.w500,
-                  //     ),
-                  //   ),
-                  // ),
+                  SizedBox(height: 16),
+
+                  // Forgot Password
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        color: Color(0xFF007aff),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -8,6 +8,7 @@ class AuthService {
   static final String loginUrl = 'https://www.digi-belgium.be/en/login';
   static final String oauthUrl = 'https://api.digi-belgium.be/v1/oauth2/send_code';
   static final String signoutUrl = 'https://www.digi-belgium.be/api/auth/signout';
+  static final String forgotPasswordUrl = 'https://api.digi-belgium.be/v1/auth/lost-password';
 
   static String accessToken = '';
   static String refreshToken = '';
@@ -52,7 +53,8 @@ class AuthService {
         })
         ..fields['1_email'] = email
         ..fields['1_password'] = password
-        ..fields['0'] = '[{"errors":{}},"\$K1",{"email":{"required":"This field is required","valid":"This field is not valid"},"password":"Password must contain at least 6 characters","code":"Code must contain 6 characters"},"69d731e0-d1f8-11ef-b7a9-ed35e98c3d6f","03AFcWeA6E5QuknPqLy7Nx7ZBCrG0to7wWYi_aP852XxWxy_LBoLYj_Xli5bTXzgbxUU8LhnOd-OvYeJkwQT57wzS704Dcpj-urvwouNF5Z_MDa2oeRDOBNRuXpurtLjL-hjGwiOkJ1Yv-a9QVW3Vh3W0KkBDIMd_4T4Va3fpA9KvWkDXIEW83iveCbrowsphhfD3PhwYD6sOmnWYW13rgZMLLSe3ttOO306wu896OD_KRvNTvrBLNwMFxNYIlFomDxzlhXdx8aG-mpYP0QBJ16MRAblMkViC-MYsUNQmB1TnTxx3_4fhgA-9gwYzFfTiZpo63vBFIJkX_BgHgky_vI_B9zQg1CjZ2ujHEoy9xJaidWo4dDNmVxNHTecnwtR3uT6sVQL74JijX4A_8nolNjYHVadsK9TDP6cvR-bC6X1kKdQ_3kF2xCvJduW7xEgSDtTILz6cWEjJ6MRd99Ion1tg2MSecxu70S4B2G4gL5gzGHwdRuD2Mgb5ROoJ8yN3wSTU8OuBokqGvsqvPXyeZjXs26Jxk99RrZJ7EQ824sqsWBw7Nfp_s9qVCEv2WY2xpBVg1nZP0wH9I1VVKVNpyhLkZ9Sb8fR6kPtbZm0Mjj4YfqfDtzKFLnzmiM0SujWiTLLTZ346Gm6kAcG4jdpYIaNKa7nFjj3XYssaBTfL5QSNOcd8W2M7vwV5kgafzJCv4m5Ey1z-7RpcI94FiiwKhxYTr2jDZ1rMGRibotaddXyknVPqw1xwbFvIMfzEzHspc2XlMiqbP-peC_diV_8AvillDktWtenrQw2Pi36j3rJJHMBfQ0TzX3-FctebL7Q7sLsB-kOGshY6AKLLZJkj4Gx8OGlbBqalmFGt-wzdDFFTAIUk7vzEu1gkvd0H6YAntL4Kb5-B6w-Lo6XCZWk_Cg5wBceS9klYohA"]'; // Same JSON as in the JavaScript code
+        ..fields['0'] =
+            '[{"errors":{}},"\$K1",{"email":{"required":"This field is required","valid":"This field is not valid"},"password":"Password must contain at least 6 characters","code":"Code must contain 6 characters"},"69d731e0-d1f8-11ef-b7a9-ed35e98c3d6f","03AFcWeA6E5QuknPqLy7Nx7ZBCrG0to7wWYi_aP852XxWxy_LBoLYj_Xli5bTXzgbxUU8LhnOd-OvYeJkwQT57wzS704Dcpj-urvwouNF5Z_MDa2oeRDOBNRuXpurtLjL-hjGwiOkJ1Yv-a9QVW3Vh3W0KkBDIMd_4T4Va3fpA9KvWkDXIEW83iveCbrowsphhfD3PhwYD6sOmnWYW13rgZMLLSe3ttOO306wu896OD_KRvNTvrBLNwMFxNYIlFomDxzlhXdx8aG-mpYP0QBJ16MRAblMkViC-MYsUNQmB1TnTxx3_4fhgA-9gwYzFfTiZpo63vBFIJkX_BgHgky_vI_B9zQg1CjZ2ujHEoy9xJaidWo4dDNmVxNHTecnwtR3uT6sVQL74JijX4A_8nolNjYHVadsK9TDP6cvR-bC6X1kKdQ_3kF2xCvJduW7xEgSDtTILz6cWEjJ6MRd99Ion1tg2MSecxu70S4B2G4gL5gzGHwdRuD2Mgb5ROoJ8yN3wSTU8OuBokqGvsqvPXyeZjXs26Jxk99RrZJ7EQ824sqsWBw7Nfp_s9qVCEv2WY2xpBVg1nZP0wH9I1VVKVNpyhLkZ9Sb8fR6kPtbZm0Mjj4YfqfDtzKFLnzmiM0SujWiTLLTZ346Gm6kAcG4jdpYIaNKa7nFjj3XYssaBTfL5QSNOcd8W2M7vwV5kgafzJCv4m5Ey1z-7RpcI94FiiwKhxYTr2jDZ1rMGRibotaddXyknVPqw1xwbFvIMfzEzHspc2XlMiqbP-peC_diV_8AvillDktWtenrQw2Pi36j3rJJHMBfQ0TzX3-FctebL7Q7sLsB-kOGshY6AKLLZJkj4Gx8OGlbBqalmFGt-wzdDFFTAIUk7vzEu1gkvd0H6YAntL4Kb5-B6w-Lo6XCZWk_Cg5wBceS9klYohA"]'; // Same JSON as in the JavaScript code
 
       // Send the request
       final response = await request.send();
@@ -133,12 +135,10 @@ class AuthService {
         'callbackUrl': callbackUrl,
       };
 
-      final response = await http.post(Uri.parse(signoutUrl),
-          body: formData,
-          headers: {
-            'Cookie': getAllCookies(),
-            'Content-Type': 'application/x-www-form-urlencoded',
-          });
+      final response = await http.post(Uri.parse(signoutUrl), body: formData, headers: {
+        'Cookie': getAllCookies(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      });
 
       handleCookies(response.headersSplitValues);
       if (getCookie('__Secure-authjs.session-token') == null) {
@@ -148,6 +148,21 @@ class AuthService {
       }
     } catch (error) {
       print('Error during signout: $error');
+    }
+  }
+
+  static Future<void> forgotPassword(String email) async {
+    try {
+      final payload = jsonEncode({"lang": "en", "email": email});
+      await http.post(Uri.parse(forgotPasswordUrl),
+          headers: {
+            'Cookie': getAllCookies(),
+            'Content-Type': 'application/json',
+          },
+          body: payload);
+      print('Code sent successfully');
+    } catch (error) {
+      print('Error sending code: $error');
     }
   }
 }
