@@ -4,24 +4,78 @@ import '../services/auth_service.dart';
 import '../services/scraping_service.dart';
 
 class HomeScreen extends StatefulWidget {
+
+  const HomeScreen({super.key});
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<Map<String, dynamic>?> scrapedData = Future.value(null);
+  bool _isLoading = true; // Track loading state
+  String? _errorMessage; // Track error messages
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    _fetchData(); // Call _fetchData when the widget loads
   }
 
   // Fetch data when the screen loads or refreshed
   Future<void> _fetchData() async {
-    scrapedData = ScrapingService.scrapeOverview();
-    setState(() {});
-    AuthService.getSession();
+    setState(() {
+      _isLoading = true; // Set loading state to true
+      _errorMessage = null; // Clear any previous error messages
+    });
+
+    try {
+      // Fetch CSRF token and session
+      await AuthService.fetchCsrfToken();
+      await AuthService.getSession();
+
+      // Check if the widget is still mounted
+      if (!mounted) return;
+
+      // Fetch scraped data
+      final data = await ScrapingService.scrapeOverview();
+
+      // Check if the widget is still mounted
+      if (!mounted) return;
+
+      // Update the state with the fetched data
+      setState(() {
+        scrapedData = Future.value(data);
+        _isLoading = false;
+      });
+
+      // If data is null, sign out the user
+      if (data == null) {
+        signOut();
+      }
+    } catch (e) {
+      // Handle errors during data fetching
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load data. Please try again.'; // Set error message
+      });
+
+      // Log the error for debugging
+      print('Error fetching data: $e');
+    }
+  }
+
+  void signOut() async {
+    await AuthService.signout();
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
   }
 
   // Convert KB to MB or GB
@@ -32,8 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
     const units = ['KB', 'MB', 'GB'];
 
     int unitIndex = 0;
-    while (value >= 1000 && unitIndex < units.length - 1) {
-      value /= 1000;
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
       unitIndex++;
     }
 
@@ -52,13 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: IconButton(
               icon: Icon(Icons.exit_to_app, color: Colors.red),
               onPressed: () {
-                AuthService.signout();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
-                  ),
-                );
+                signOut();
               },
             ),
           ),
@@ -82,14 +130,25 @@ class _HomeScreenState extends State<HomeScreen> {
               child: FutureBuilder<Map<String, dynamic>?>(
                 future: scrapedData,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (_isLoading) {
                     return Center(
                       child: CircularProgressIndicator(),
+                    );
+                  } else if (_errorMessage != null) {
+                    return Center(
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.red,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                     );
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text(
-                        'Error loading data',
+                        'An unexpected error occurred.',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.red,
@@ -231,7 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-
                         if (usageInfo != null)
                           Padding(
                             padding: const EdgeInsets.all(16.0),

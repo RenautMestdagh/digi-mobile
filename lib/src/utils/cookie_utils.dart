@@ -58,7 +58,7 @@ String getAllCookies() {
   cookieStore.keys.forEach((cookieName) {
     final cookieValue = getCookie(cookieName);  // This handles removal of expired cookies
     if (cookieValue != null) {
-      validCookies.add('$cookieName=$cookieValue');
+      validCookies.add('$cookieName=${Uri.encodeComponent(cookieValue)}');
     }
   });
 

@@ -57,5 +57,9 @@ Future<void> loadCookiesFromSharedPreferences() async {
       print('Error processing cookie for key "$key": $e');
     }
   }
+
+  // Always add cookie with key cmp_level and value 15 and expiration 1 year from now
+  DateTime expiration = DateTime.now().add(const Duration(days: 365));
+  saveOrUpdateCookie('cmp_level', '15', expiration);
 }
 

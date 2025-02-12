@@ -15,22 +15,22 @@ class MyApp extends StatelessWidget {
     return FutureBuilder<void>(
       future: loadCookiesFromSharedPreferences(),  // Wait for cookies to load
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const MaterialApp(
+            title: 'DIGI Mobile',
+            home: Scaffold(body: Center(child: CircularProgressIndicator())), // Show loading indicator while loading cookies
+          );
+        } else {
+          // Once cookies are loaded, check for the session cookie and navigate accordingly
           return MaterialApp(
             title: 'DIGI Mobile',
-            home: Scaffold(body: Center(child:CircularProgressIndicator())),  // Show loading indicator while loading cookies
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: getCookie('__Secure-authjs.session-token') == null ? const LoginScreen() : const HomeScreen(),
           );
         }
-
-        // Once cookies are loaded, check for the session cookie and navigate accordingly
-        return MaterialApp(
-          title: 'DIGI Mobile',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: getCookie('__Secure-authjs.session-token') == null ? LoginScreen() : HomeScreen(),
-        );
-      },
+      }
     );
   }
 }

@@ -9,17 +9,19 @@ class ScrapingService {
   static Future<Map<String, dynamic>?> scrapeOverview() async {
     try {
       // Send HTTP request with the session token in the cookie header
-      final response = await http.get(
-        Uri.parse("https://www.digi-belgium.be/en/my-digi/overview"),
-        headers: {
-          'Cookie': getAllCookies(),
-        },
-      );
 
-      if (response.statusCode != 200) throw new Exception("Status code not 200");
+      final response = await http.Client().send(
+          http.Request('GET', Uri.parse('https://www.digi-belgium.be/en/my-digi/overview'))
+            ..headers['Cookie'] = getAllCookies()
+            ..followRedirects = false
+          );
+
+      if (response.statusCode == 307) {
+        return null;
+      } else if (response.statusCode != 200) throw new Exception("Status code not 200");
 
       // Parse the HTML response
-      var document = parse(response.body);
+      var document = parse(await response.stream.bytesToString());
 
       // Look for the specific HTML structure containing the mobile data
       final allProducts = document.querySelectorAll('.card-progress');
@@ -56,20 +58,29 @@ class ScrapingService {
     } catch (e) {
       // Handle errors, e.g., network issues
       print("Error during scraping: $e");
-      rethrow;
+      return null;
     }
   }
 
 
   // Helper method to convert MB/GB to KB
-  static int _convertToKB(String value) {
-    double numericValue = double.parse(value.split(' ')[0]);
-    if (value.contains('MB')) {
-      return (numericValue * 1000).toInt(); // Convert MB to KB
-    } else if (value.contains('GB')) {
-      return (numericValue * 1000000).toInt(); // Convert GB to KB
-    } else {
-      throw FormatException("Unsupported unit in $value");
+  static int _convertToKB(String data) {
+    try {
+      if (data.toLowerCase().contains('gb')) {
+        final value = double.tryParse(data.replaceAll('GB', '').trim()) ?? 0;
+        return (value * 1024 * 1024).toInt(); // Convert GB to KB
+      } else if (data.toLowerCase().contains('mb')) {
+        final value = double.tryParse(data.replaceAll('MB', '').trim()) ?? 0;
+        return (value * 1024).toInt(); // Convert MB to KB
+      } else if (data.toLowerCase().contains('kb')) {
+        final value = double.tryParse(data.replaceAll('KB', '').trim()) ?? 0;
+        return value.toInt();
+      } else {
+        return 0; // Default to 0 if the format is unknown
+      }
+    } catch (e) {
+      print("Error converting data to KB: $e");
+      return 0;
     }
   }
 }
