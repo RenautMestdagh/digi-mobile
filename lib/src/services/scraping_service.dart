@@ -29,13 +29,18 @@ class ScrapingService {
 
       for (html.Element product in allProducts) {
         final type = product.querySelector('h6')?.text ?? '';
-        final mobileNumber = product.querySelector('p')?.text ?? '';
+        final mobileNumber = product.querySelector('.card-progress-description')?.text ?? '';
 
-        final dataInfo = product.querySelectorAll('.card-progress-title span');
+        var dataInfo = product.querySelector('.card-progress-title')?.text.split('/') ?? [];
 
-        final used = dataInfo.isNotEmpty && dataInfo[0].text.isNotEmpty ? dataInfo[0].text : '0 MB';
-        final available = dataInfo.length > 2 && dataInfo[2].text.isNotEmpty ? dataInfo[2].text : '15 GB';
+        String used = '0';
+        String available = '0 MB'; // default with unit
 
+        if (dataInfo.length == 2) {
+          final unit = _extractUnit(dataInfo[1]); // e.g., 'GB'
+          used = '${dataInfo[0].trim()} $unit';
+          available = dataInfo[1].trim();
+        }
 
         final usedKb = _convertToKB(used);
         final availableKb = _convertToKB(available);
@@ -47,6 +52,7 @@ class ScrapingService {
           availableKb,
         ]);
       }
+
 
       String? usageInfo = document.querySelector('.info-box-message p')?.text;
 
@@ -62,6 +68,13 @@ class ScrapingService {
     }
   }
 
+  static String _extractUnit(String text) {
+    final lower = text.toLowerCase();
+    if (lower.contains('gb')) return 'GB';
+    if (lower.contains('mb')) return 'MB';
+    if (lower.contains('kb')) return 'KB';
+    return 'MB'; // Default fallback
+  }
 
   // Helper method to convert MB/GB to KB
   static int _convertToKB(String data) {

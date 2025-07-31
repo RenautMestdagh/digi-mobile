@@ -182,8 +182,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 String type = item[0];
                                 String phoneNumber = item[1];
                                 int usedKB = item[2];
-                                int availableKB = item[3];
-                                double usagePercentage = usedKB / (usedKB + availableKB);
+                                int maxKB = item[3];
+                                double usagePercentage = usedKB / maxKB;
 
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 24.0, right: 24.0),
@@ -233,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: CircularProgressIndicator(
                                                 value: usagePercentage,
                                                 strokeWidth: 7.5,
-                                                strokeCap: StrokeCap.round,
+                                                strokeCap: StrokeCap.butt,
                                                 backgroundColor: Color.fromRGBO(218, 218, 218, 1.0),
                                                 valueColor: AlwaysStoppedAnimation<Color>(
                                                   usagePercentage >= 0.9
@@ -272,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   style: TextStyle(fontSize: 16, color: Colors.grey),
                                                 ),
                                                 Text(
-                                                  formatData(availableKB),
+                                                  formatData(maxKB),
                                                   style: TextStyle(
                                                     fontSize: 22,
                                                     fontWeight: FontWeight.bold,
