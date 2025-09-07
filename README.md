@@ -14,8 +14,9 @@ This is an unofficial mobile app for [Digi Belgium](https://www.digi-belgium.be/
 
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_1.jpg" width="23%"></img> <img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_2.jpg" width="23%"></img> <img src="https://raw.githubusercontent.com/RenautMestdagh/digi_mobile/master/screenshots/Screenshot_3.jpg" width="23%"></img> 
-
+| Login                                                                                                          | 2FA                                                                                                            | Home Screen                                                                                                    |
+|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| ![Screenshot 1](https://github.com/RenautMestdagh/digi_mobile/blob/main/screenshots/Screenshot_1.jpg?raw=true) | ![Screenshot 2](https://github.com/RenautMestdagh/digi_mobile/blob/main/screenshots/Screenshot_2.jpg?raw=true) | ![Screenshot 3](https://github.com/RenautMestdagh/digi_mobile/blob/main/screenshots/Screenshot_3.jpg?raw=true) |
 ## Disclaimer
 
 This app is not affiliated with or endorsed by Digi Belgium. It is an independent project developed for educational purposes and personal use.
