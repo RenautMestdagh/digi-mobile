@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  int? _selectedVerificationMethod;
+  int? _selectedVerificationMethod = 1;
   bool _isLoading = false;
   bool _isPasswordVisible = false; // To toggle password visibility
 
