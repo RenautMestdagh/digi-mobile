@@ -24,9 +24,9 @@ class _MailAuthScreenState extends State<MailAuthScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.selectedVerificationMethod == 2) {
-      _startAutomaticCodeRetrieval();
-    }
+    // if (widget.selectedVerificationMethod == 2) {
+    //   _startAutomaticCodeRetrieval();
+    // }
   }
 
   @override
@@ -35,26 +35,26 @@ class _MailAuthScreenState extends State<MailAuthScreen> {
     super.dispose();
   }
 
-  Future<String> retrieveCode() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return "123456"; // Simulated retrieved code
-  }
-
-  Future<void> _startAutomaticCodeRetrieval() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    String code = await retrieveCode();
-
-    setState(() {
-      _retrievedCode = code;
-      _isLoading = false;
-      _codeController.text = _retrievedCode;
-    });
-
-    _submitCode();
-  }
+  // Future<String> retrieveCode() async {
+  //   await Future.delayed(const Duration(seconds: 2));
+  //   return "123456"; // Simulated retrieved code
+  // }
+  //
+  // Future<void> _startAutomaticCodeRetrieval() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //
+  //   String code = await retrieveCode();
+  //
+  //   setState(() {
+  //     _retrievedCode = code;
+  //     _isLoading = false;
+  //     _codeController.text = _retrievedCode;
+  //   });
+  //
+  //   _submitCode();
+  // }
 
   Future<void> _submitCode() async {
     setState(() {
