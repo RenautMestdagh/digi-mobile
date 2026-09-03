@@ -14,9 +14,9 @@ This is an unofficial mobile app for [Digi Belgium](https://www.digi-belgium.be/
 
 ## Screenshots
 
-| Login | 2FA | Home Screen |
-|-------|-----|-------------|
-| <img src="screenshots/Screenshot_1.jpg" width="200" alt="Login"> | <img src="screenshots/Screenshot_2.jpg" width="200" alt="2FA"> | <img src="screenshots/Screenshot_3.jpg" width="200" alt="Home Screen"> |
+| Login | 2FA | Forgot Password                                                            | Home Screen   |
+|-------|-----|----------------------------------------------------------------------------|---------------|
+| <img src="screenshots/Screenshot_1.jpg" width="200" alt="Login"> | <img src="screenshots/Screenshot_2.jpg" width="200" alt="2FA"> | <img src="screenshots/Screenshot_3.jpg" width="200" alt="Forgot Password"> | <img src="screenshots/Screenshot_4.jpg" width="200" alt="Home Screen"> |
 
 ## Disclaimer
 
