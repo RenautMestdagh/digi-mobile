@@ -2,6 +2,8 @@ import 'package:digi_mobile/src/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/scraping_service.dart';
+import '../models/product.dart';
+import '../widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -12,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<Map<String, dynamic>?> scrapedData = Future.value(null);
+  Future<List<Product>?> scrapedData = Future.value(null);
   bool _isLoading = true; // Track loading state
   String? _errorMessage; // Track error messages
 
@@ -38,19 +40,31 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
 
       // Fetch scraped data
-      final data = await ScrapingService.scrapeOverview();
+      final products = await ScrapingService.scrapeProducts();
+      List<Product> productData = [];
+      
+      if (products != null) {
+        final results = await Future.wait(
+            products.map((product) => ScrapingService.scrapeProduct(product))
+        );
+        for (var result in results) {
+          if (result != null) {
+            productData.add(result);
+          }
+        }
+      }
 
       // Check if the widget is still mounted
       if (!mounted) return;
 
       // Update the state with the fetched data
       setState(() {
-        scrapedData = Future.value(data);
+        scrapedData = Future.value(productData);
         _isLoading = false;
       });
 
       // If data is null, sign out the user
-      if (data == null) {
+      if (products == null) {
         signOut();
       }
     } catch (e) {
@@ -78,22 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Convert KB to MB or GB
-  String formatData(int? dataKB) {
-    if (dataKB == null) return '0.0 MB';
-
-    double value = dataKB.toDouble();
-    const units = ['KB', 'MB', 'GB'];
-
-    int unitIndex = 0;
-    while (value >= 1024 && unitIndex < units.length - 1) {
-      value /= 1024;
-      unitIndex++;
-    }
-
-    return '${value.toStringAsFixed(2)} ${units[unitIndex]}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,22 +110,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Positioned(
             top: 60,
-            left: MediaQuery.of(context).size.width / 2 - 75,
+            left: MediaQuery.of(context).size.width / 2 - 50,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20), // Rounded corners for logo
               child: Image.asset(
                 'assets/logo.png',
-                height: 150, // Bigger logo
-                width: 150,
+                height: 100, // Bigger logo
+                width: 100,
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 250),
+            padding: const EdgeInsets.only(top: 175),
             child: RefreshIndicator(
               onRefresh: _fetchData, // Pull-to-refresh functionality
-              child: FutureBuilder<Map<String, dynamic>?>(
+              child: FutureBuilder<List<Product>?>(
                 future: scrapedData,
                 builder: (context, snapshot) {
                   if (_isLoading) {
@@ -156,9 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     );
-                  } else if (snapshot.hasData && snapshot.data != null && snapshot.data!['products'] != null) {
-                    List<List<dynamic>> data = snapshot.data!['products'];
-                    String? usageInfo = snapshot.data!['usageInfo'];
+                  } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+                    List<Product> products = snapshot.data!;
                     return Column(
                       children: [
                         Expanded(
@@ -178,131 +175,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                             blendMode: BlendMode.dstIn,
                             child: ListView(
-                              children: data.map((item) {
-                                String type = item[0];
-                                String phoneNumber = item[1];
-                                int usedKB = item[2];
-                                int maxKB = item[3];
-                                double usagePercentage = usedKB / maxKB;
-
+                              children: products.map((product) {
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                                  child: Container(
-                                    padding: EdgeInsets.all(24),
-                                    margin: EdgeInsets.only(bottom: 16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 10,
-                                          spreadRadius: 2,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  type,
-                                                  style: TextStyle(
-                                                    fontSize: 26,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.blueGrey[900],
-                                                  ),
-                                                ),
-                                                Text(
-                                                  phoneNumber,
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w300,
-                                                    color: Colors.blueGrey[900],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Transform.scale(
-                                              scale: 0.75,
-                                              child: CircularProgressIndicator(
-                                                value: usagePercentage,
-                                                strokeWidth: 7.5,
-                                                strokeCap: StrokeCap.butt,
-                                                backgroundColor: Color.fromRGBO(218, 218, 218, 1.0),
-                                                valueColor: AlwaysStoppedAnimation<Color>(
-                                                  usagePercentage >= 0.9
-                                                      ? Colors.red
-                                                      : usagePercentage >= 0.7
-                                                      ? Colors.orange
-                                                      : Colors.green,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 45),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Text(
-                                                  'Current Usage',
-                                                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                                                ),
-                                                Text(
-                                                  formatData(usedKB),
-                                                  style: TextStyle(
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Column(
-                                              children: [
-                                                Text(
-                                                  'Data Limit',
-                                                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                                                ),
-                                                Text(
-                                                  formatData(maxKB),
-                                                  style: TextStyle(
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  child: ProductCard(product: product),
                                 );
                               }).toList(),
                             ),
                           ),
                         ),
-                        if (usageInfo != null)
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              usageInfo,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color.fromRGBO(110, 110, 110, 1.0),
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ),
                       ],
                     );
                   } else {
