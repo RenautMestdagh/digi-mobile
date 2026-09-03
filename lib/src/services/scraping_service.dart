@@ -3,15 +3,17 @@ import 'package:html/parser.dart';
 import 'package:html/dom.dart' as html;
 
 import '../utils/cookie_utils.dart';
+import '../models/product.dart';
+import '../models/usage_data.dart';
 
 class ScrapingService {
-  // This method scrapes the given URL and extracts and converts mobile usage data to KB
-  static Future<Map<String, dynamic>?> scrapeOverview() async {
+  static final baseUrl = Uri.parse('https://www.digi-belgium.be/en/my-digi/');
+
+  static Future<List<Product>?> scrapeProducts() async {
     try {
-      // Send HTTP request with the session token in the cookie header
 
       final response = await http.Client().send(
-          http.Request('GET', Uri.parse('https://www.digi-belgium.be/en/my-digi/overview'))
+          http.Request('GET', baseUrl.resolve('my-products'))
             ..headers['Cookie'] = getAllCookies()
             ..followRedirects = false
           );
@@ -20,60 +22,104 @@ class ScrapingService {
         return null;
       } else if (response.statusCode != 200) throw new Exception("Status code not 200");
 
-      // Parse the HTML response
       var document = parse(await response.stream.bytesToString());
 
-      // Look for the specific HTML structure containing the mobile data
-      final allProducts = document.querySelectorAll('.card-progress');
-      List<List<dynamic>> scrapedProducts = [];
+      final allServices = document.querySelectorAll('.card-service:not(.add-service)');
+      List<Product> scrapedServices = [];
 
-      for (html.Element product in allProducts) {
-        final type = product.querySelector('h6')?.text ?? '';
-        final mobileNumber = product.querySelector('.card-progress-description')?.text ?? '';
+      for (html.Element product in allServices) {
+        final title = product.querySelector('.card-service-title')?.text ?? '';
+        final mobileNumber = product.querySelector('.card-service-description')?.text ?? '';
+        final productUrl = product.querySelector('.card-service-btn')?.attributes['href'] ?? '';
 
-        var dataInfo = product.querySelector('.card-progress-title')?.text.split('/') ?? [];
-
-        String used = '0';
-        String available = '0 MB'; // default with unit
-
-        if (dataInfo.length == 2) {
-          final unit = _extractUnit(dataInfo[1]); // e.g., 'GB'
-          used = '${dataInfo[0].trim()} $unit';
-          available = dataInfo[1].trim();
-        }
-
-        final usedKb = _convertToKB(used);
-        final availableKb = _convertToKB(available);
-
-        scrapedProducts.add([
-          type,
-          mobileNumber,
-          usedKb,
-          availableKb,
-        ]);
+        scrapedServices.add(Product(
+          title: title,
+          mobileNumber: mobileNumber,
+          productUrl: productUrl,
+          usageData: [],
+        ));
       }
 
-
-      String? usageInfo = document.querySelector('.info-box-message p')?.text;
-
-      // Return the result as a Map with key "products"
-      return {
-        'products': scrapedProducts,
-        'usageInfo': usageInfo,
-      };
+      return scrapedServices;
     } catch (e) {
-      // Handle errors, e.g., network issues
       print("Error during scraping: $e");
       return null;
     }
   }
 
-  static String _extractUnit(String text) {
-    final lower = text.toLowerCase();
-    if (lower.contains('gb')) return 'GB';
-    if (lower.contains('mb')) return 'MB';
-    if (lower.contains('kb')) return 'KB';
-    return 'MB'; // Default fallback
+  static Future<Product?> scrapeProduct(Product product) async {
+    try {
+      final response = await http.Client().send(
+          http.Request('GET', baseUrl.resolve(product.productUrl))
+            ..headers['Cookie'] = getAllCookies()
+            ..followRedirects = false
+      );
+
+      if (response.statusCode != 200) throw new Exception("Status code not 200");
+
+      // Parse the HTML response
+      var document = parse(await response.stream.bytesToString());
+
+      // Extract all 4 card-progress elements
+      final progressCards = document.querySelectorAll('.card-progress');
+      List<UsageData> usageData = [];
+
+      for (html.Element card in progressCards) {
+        final type = card.querySelector('h6')?.text ?? '';
+        final limitElement = card.querySelector('.card-progress-description');
+        String limit = '';
+        if (limitElement != null) {
+          final clonedElement = limitElement.clone(true);
+          clonedElement.querySelectorAll('.tooltip-element').forEach((e) => e.remove());
+          limit = clonedElement.text.trim();
+        }
+        final usedText = card.querySelector('.card-progress-title')?.text ?? '';
+        final usedTextClean = usedText.replaceAll(' SMS', '');
+        final used = usedTextClean.contains(': ') ? usedTextClean.split(': ')[1] : usedTextClean;
+
+        final showProgressBar = limit.contains(' GB');
+        double percentage = 0.0;
+        if (showProgressBar) {
+          final limitKB = _convertToKB(limit);
+          final usedKB = _convertToKB(used);
+          if (limitKB > 0) {
+            percentage = usedKB / limitKB;
+          }
+        }
+
+        usageData.add(UsageData(
+          type: type,
+          limit: limit,
+          used: used,
+          progressBar: showProgressBar,
+          percentage: percentage,
+        ));
+      }
+
+      // Extract extra info (outside bundle costs, update date)
+      final infoBoxes = document.querySelectorAll('.info-box.primary .info-box-message p');
+      String? outsideBundleCosts;
+      String? updateDate;
+
+      if (infoBoxes.length >= 2) {
+        outsideBundleCosts = infoBoxes[0].innerHtml.replaceAll('<br>', '\n');
+        updateDate = infoBoxes[1].innerHtml.replaceAll('<br>', '\n');
+      }
+
+      return Product(
+        title: product.title,
+        mobileNumber: product.mobileNumber,
+        productUrl: product.productUrl,
+        usageData: usageData,
+        outsideBundleCosts: outsideBundleCosts,
+        updateDate: updateDate,
+      );
+
+    } catch (e) {
+      // Handle errors, e.g., network issues
+      print("Error during scraping: $e");
+      return null;
+    }
   }
 
   // Helper method to convert MB/GB to KB
