@@ -17,12 +17,14 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const MaterialApp(
+            debugShowCheckedModeBanner: false, // Add this line
             title: 'DIGI Mobile',
             home: Scaffold(body: Center(child: CircularProgressIndicator())), // Show loading indicator while loading cookies
           );
         } else {
           // Once cookies are loaded, check for the session cookie and navigate accordingly
           return MaterialApp(
+            debugShowCheckedModeBanner: false, // Add this line
             title: 'DIGI Mobile',
             theme: ThemeData(
               primarySwatch: Colors.blue,
