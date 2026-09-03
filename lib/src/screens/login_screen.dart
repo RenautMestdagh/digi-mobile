@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  int? _selectedVerificationMethod = 1;
+  int? _selectedVerificationMethod = null;
   bool _isLoading = false;
   bool _isPasswordVisible = false; // To toggle password visibility
 
@@ -126,7 +126,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Select Verification Method',
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 16),
@@ -244,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  SizedBox(height: 32),
+                  SizedBox(height: 128),
 
                   // Email Input
                   TextField(
@@ -330,78 +329,62 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 24),
 
                   // Verification Selector
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _verificationError ? Colors.red : Colors.transparent,
                       ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _selectVerificationMethod,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: _verificationError ? Colors.red : Colors.grey[300]!,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _selectVerificationMethod,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.mail,
+                                color: _verificationError ? Colors.red : Color(0xFF007aff),
                               ),
-                            ),
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        _selectedVerificationMethod == null
-                                            ? Icons.mail_lock
-                                            : _selectedVerificationMethod == 1
-                                                ? Icons.code
-                                                : Icons.forward_to_inbox,
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Verification method',
+                                      style: TextStyle(
+                                        fontSize: 12,
                                         color: _verificationError ? Colors.red : Color(0xFF007aff),
                                       ),
-                                      SizedBox(width: 8),
-                                      Flexible(
-                                        child: Text(
-                                          verificationMethods.containsKey(_selectedVerificationMethod)
-                                              ? verificationMethods[_selectedVerificationMethod]!
-                                              : 'Verification method',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: _verificationError
-                                                ? Colors.red
-                                                : _selectedVerificationMethod == null
-                                                    ? Color.fromRGBO(107, 117, 117, 1.0)
-                                                    : Colors.black,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      verificationMethods.containsKey(_selectedVerificationMethod)
+                                          ? verificationMethods[_selectedVerificationMethod]!
+                                          : 'Select method',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: _verificationError
+                                            ? Colors.red
+                                            : _selectedVerificationMethod == null
+                                                ? Color.fromRGBO(107, 117, 117, 1.0)
+                                                : Colors.black,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit, color: Color(0xFF007aff), size: 18),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        _selectedVerificationMethod == null ? 'Select' : 'Change',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xFF007aff),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                              Icon(
+                                Icons.edit,
+                                color: Color(0xFF007aff),
+                                size: 20,
+                              ),
+                            ],
                           ),
                         ),
                       ),
