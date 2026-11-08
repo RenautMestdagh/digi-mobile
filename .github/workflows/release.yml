@@ -1,10 +1,9 @@
 name: Release
 
-# A v* tag releases the Android app, a manual run only builds it (the APK as a run artifact)
+# Publishing a GitHub release vX.Y.Z builds the signed APK as version X.Y.Z and attaches it to the release
 on:
-  push:
-    tags: ['v*']
-  workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: write
@@ -47,17 +46,9 @@ jobs:
           printf 'storeFile=release.jks\nstorePassword=%s\nkeyPassword=%s\nkeyAlias=release\n' "$PASSWORD" "$PASSWORD" > android/key.properties
 
       - name: Build APK
-        run: |
-          [ "$GITHUB_REF_TYPE" = tag ] && version="--build-name ${GITHUB_REF_NAME#v}"
-          flutter build apk --release $version --build-number "$GITHUB_RUN_NUMBER"
+        run: flutter build apk --release --build-name "${GITHUB_REF_NAME#v}" --build-number "$GITHUB_RUN_NUMBER"
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Create release
-        if: github.ref_type == 'tag'
+      - name: Attach the APK to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" build/app/outputs/flutter-apk/app-release.apk --generate-notes
+        run: gh release upload "$GITHUB_REF_NAME" build/app/outputs/flutter-apk/app-release.apk --clobber
