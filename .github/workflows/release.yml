@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 # A v* tag releases the Android app, a manual run only builds it (the APK as a run artifact)
 on:
