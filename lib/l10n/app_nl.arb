@@ -1,0 +1,35 @@
+{
+  "@@locale": "nl",
+  "email": "E-mailadres",
+  "emailMissing": "Vul je e-mailadres in",
+  "password": "Wachtwoord",
+  "passwordMissing": "Vul je wachtwoord in",
+  "showPassword": "Wachtwoord tonen",
+  "hidePassword": "Wachtwoord verbergen",
+  "logIn": "Inloggen",
+  "loginRejected": "Dit e-mailadres en wachtwoord kent DIGI niet",
+  "forgotPassword": "Wachtwoord vergeten?",
+  "codeTitle": "Verificatiecode",
+  "codeExplanation": "DIGI heeft je een e-mail gestuurd met een code van 6 cijfers.",
+  "code": "Code",
+  "codeInvalid": "Vul de 6 cijfers uit de e-mail in",
+  "codeRejected": "Deze code klopt niet",
+  "confirm": "Bevestigen",
+  "resetTitle": "Wachtwoord vergeten",
+  "resetExplanation": "DIGI stuurt je een e-mail om een nieuw wachtwoord te kiezen.",
+  "resetSend": "Versturen",
+  "resetSent": "Kijk in je mailbox om een nieuw wachtwoord te kiezen",
+  "resetRejected": "DIGI kon geen e-mail sturen naar dit adres",
+  "logOut": "Uitloggen",
+  "noProducts": "Er staan geen producten op je account",
+  "noConnection": "DIGI is niet bereikbaar. Controleer je internetverbinding.",
+  "unexpectedResponse": "DIGI gaf een onverwacht antwoord. Probeer het later opnieuw.",
+  "sessionExpired": "Je sessie is verlopen. Log opnieuw in.",
+  "tryAgain": "Opnieuw proberen",
+  "used": "{percent} gebruikt",
+  "@used": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  }
+}
